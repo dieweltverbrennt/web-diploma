@@ -29,7 +29,7 @@ class SeatController extends Controller
     public function store(Request $request)
     {
         $seats = $request->seats;
-        foreach($seats as $seat) {
+        foreach ($seats as $seat) {
             Seat::create([
                 'row_number' => $seat['row_number'],
                 'seat_number' => $seat['seat_number'],
@@ -73,7 +73,7 @@ class SeatController extends Controller
         try {
             $seatIds = explode(',', $ids);
 
-            if($request->seats) {
+            if ($request->seats) {
                 $seats = $request->seats;
 
                 foreach ($seats as $seat) {
@@ -81,7 +81,7 @@ class SeatController extends Controller
                     $seatModel->update(['type' => $seat['type']]);
                 }
                 return response()->json(['request' => $seats]);
-            } elseif($request->hall && $request->price && $request->type) {
+            } elseif ($request->hall && $request->price && $request->type) {
 
                 $seatModel = Seat::where('hall_id', $request->hall)
                 ->where('type', $request->type)
@@ -92,10 +92,16 @@ class SeatController extends Controller
                     $seatModel = Seat::findOrFail($seatId);
                     $seatModel->update(['is_free' => !$seatModel->is_free]);
                 }
-                return response()->json(['success' => true, 'message' => 'Статусы мест успешно изменены']);
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Статусы мест успешно изменены'
+                ]);
             }
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Не удалось изменить статусы мест']);
+            return response()->json([
+                'success' => false, 
+                'message' => 'Не удалось изменить статусы мест'
+            ]);
         }
     }
 

@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->get('/access', function (Request $request) {
     if ($request->user()) {
         return response()->json(['success' => true, 'user' => $request]);
     } else {
-        return response()->json(['success' => false, 'message' => 'Unauthorized'], Response::HTTP_OK);
+        return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
     }
 });
 

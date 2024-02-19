@@ -11,9 +11,11 @@
                 <li v-for="(item, index) in film.sessions" :key="index">{{ item.start_time.split(':').slice(0, 2).join(':') }} - {{ item.end_time.split(':').slice(0, 2).join(':') }} |  Зал {{ item.hall.hall_number }}
                     <button class="conf-step__button conf-step__button-trash" @click="deleteSession(item.id)"></button>
                 </li>
-                <li v-for="(item, index) in newSessions" :key="index">{{ item.start }} - {{ item.end }} |  Зал {{ item.hallNumber }}
-                    <button class="conf-step__button conf-step__button-trash" @click="deleteSession(item.id)"></button>
+                <div v-for="(item, index) in newSessions" :key="index">
+                <li v-if="item.filmName == film.name">{{ item.start }} - {{ item.end }} |  Зал {{ item.hallNumber }}
+                    <button class="conf-step__button conf-step__button-trash" @click="deleteSession(item)"></button>
                 </li>
+                </div>
             </ul>
 
             <div class="modal-form__wrapper" v-if="isOpenSessionForm">
@@ -81,8 +83,8 @@ const emits = defineEmits(['closeRedactModal', 'deleteSession', 'addSession']);
 const closeRedactModal = () => {
     emits('closeRedactModal');
 };
-const deleteSession = (id) => {
-    emits('deleteSession', id);
+const deleteSession = (item) => {
+    emits('deleteSession', item);
 };
 const validateStartTime = () => {
     start.value = start.value.replace(/[^\d:]/g, '');

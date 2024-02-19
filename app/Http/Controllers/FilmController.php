@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Film;
 
 class FilmController extends Controller
@@ -29,19 +30,17 @@ class FilmController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'film' => 'required|array',
-            'film.*' => 'required'
-        ]);
-
-        $film = $request->film;
+        $image = $request->file('poster');
+        $path = $image->store('public/posters');
+        $imageUrl = asset('storage/' . $path);
+        $cleanPath = str_replace('public/', '', $imageUrl);
 
         Film::create([
-            'name' => $film['name'],
-            'description' => $film['description'],
-            'production_country' => $film['productionCountry'],
-            'duration' => $film['duration'],
-            'path_to_image' => $film['poster']
+            'name' => $request->name,
+            'description' => $request->description,
+            'production_country' => $request->productionCountry,
+            'duration' => $request->duration,
+            'path_to_image' => $cleanPath
         ]);
 
         $films = Film::with('sessions.hall')->get();

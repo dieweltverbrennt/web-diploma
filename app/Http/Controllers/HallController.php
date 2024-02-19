@@ -23,7 +23,7 @@ class HallController extends Controller
     public function store(Request $request)
     {
         try {
-            $hallNumber = $request->hall_number ? $request->hall_number : intval(Hall::max('hall_number')) + 1;
+            $hallNumber = $request->hall_number ?? intval(Hall::max('hall_number')) + 1;
             $rowsCount = $request->rows_count ? $request->rows_count : 10;
             $seatsInRowCount = $request->seats_in_row_count ? $request->seats_in_row_count : 10;
             $seatCount = $rowsCount * $seatsInRowCount;
@@ -79,15 +79,15 @@ class HallController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // $request->validate([
-        //     'rows' => 'required|integer',
-        //     'seats' => 'required|integer',
-        // ]);
-        if($request->rows && $request->seats) {
+        if ($request->rows && $request->seats) {
             $total_number = $request->rows * $request->seats;
 
             $hallModel = Hall::findOrFail($id);
-            $hallModel->update(['rows_count' => $request->rows, 'seats_in_row_count' => $request->seats, 'seat_count' => $total_number]);
+            $hallModel->update([
+                'rows_count' => $request->rows, 
+                'seats_in_row_count' => $request->seats, 
+                'seat_count' => $total_number
+            ]);
 
             $halls = Hall::with('sessions', 'seats')->get();
 
@@ -95,10 +95,9 @@ class HallController extends Controller
         } else {
             $ids = explode(',', $id);
             $hallModels = Hall::findOrFail($ids);
-            foreach($hallModels as $hallModel) {
+            foreach ($hallModels as $hallModel) {
                 $hallModel->update(['is_active' => $request->isActive]);
             }
-
             $halls = Hall::with('sessions.film', 'seats')->get();
             return response()->json(['halls' => $halls]);
         }
@@ -110,15 +109,11 @@ class HallController extends Controller
     public function destroy(string $id)
     {
         try {
-            // Находим зал по его идентификатору
             $hall = Hall::findOrFail($id);
-            // Удаляем зал из базы данных
             $hall->delete();
-            // Возвращаем успешный ответ
             $halls = Hall::with('sessions.film')->get();
             return response()->json(['halls' => $halls], 201);
         } catch (\Exception $e) {
-            // Если произошла ошибка, возвращаем сообщение об ошибке
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->integer('row_number');
             $table->integer('seat_number');
-            $table->foreignId('hall_id');
-            $table->string('type');
-            $table->boolean('is_free');
-            $table->integer('price');
+            $table->foreignId('hall_id')->constrained()->onDelete('cascade');
+            $table->string('type')->nullable();
+            $table->boolean('is_free')->nullable();
+            $table->integer('price')->nullable();
         });
     }
 

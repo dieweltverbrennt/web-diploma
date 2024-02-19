@@ -2,7 +2,7 @@
     <section class="movie">
         <div class="movie__info">
             <div class="movie__poster">
-                <img class="movie__poster-image" :alt="props.film.name" :src="srcToImg">
+                <img class="movie__poster-image" :alt="props.film.name" :src="props.film.path_to_image">
             </div>
             <div class="movie__description">
                 <h2 class="movie__title">{{ props.film.name }}</h2>
@@ -49,7 +49,7 @@ const props = defineProps({
 const halls = ref([]);
 
 // название картинки к фильму берется из БД, а хранятся они в папке assets
-const srcToImg = ref(require(`@/assets/client/img/${props.film.path_to_image}`));
+// const srcToImg = ref(require(`@/assets/client/img/${props.film.path_to_image}`));
 
 onMounted(async () => {
     try {

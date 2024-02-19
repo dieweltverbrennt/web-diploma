@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('halls', function (Blueprint $table) {
             $table->id();
-            $table->integer('hall_number');
-            $table->integer('seat_count');
-            $table->integer('rows_count');
-            $table->integer('seats_in_row_count');
+            $table->smallInteger('hall_number')->unsigned();
+            $table->smallInteger('seat_count')->unsigned();
+            $table->smallInteger('rows_count')->unsigned();
+            $table->smallInteger('seats_in_row_count')->unsigned();
             $table->boolean('is_active')->default(false);
             $table->timestamps();
         });

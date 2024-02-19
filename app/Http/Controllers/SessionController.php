@@ -37,7 +37,7 @@ class SessionController extends Controller
         ]);
         $sessions = $request->sessions;
         try {
-            foreach($sessions as $session) {
+            foreach ($sessions as $session) {
                 Session::create([
                     'start_time' => Carbon::createFromTimeString($session['start']),
                     'end_time' => Carbon::createFromTimeString($session['end']),

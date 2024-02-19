@@ -99,7 +99,7 @@
 
         <div class="conf-step__movies">
           <div class="conf-step__movie" v-for="(item, index) in filmsData" :key="index" @click="openRedactModal(item)">
-            <img class="conf-step__movie-poster" alt="poster" :src="require(`@/assets/client/img/${item.path_to_image}`)">
+            <img class="conf-step__movie-poster" alt="poster" :src="item.path_to_image">
             <h3 class="conf-step__movie-title">{{ item.name }}</h3>
             <p class="conf-step__movie-duration">{{ item.duration }}</p>
           </div>
@@ -381,6 +381,17 @@ const savePriceChanges = async () => {
         console.error('Ошибка при изменении цен:', error);
     }
   }
+  if(newVipPrices.value[selectedHallPrices.value] !== vipPrices.value[selectedHallPrices.value]) {
+    try {
+        const response = await apiRequest.put(`/seats/${selectedHallPrices.value}`, {
+            hall: hallId,
+            price: newVipPrices.value[selectedHallPrices.value],
+            type: 'vip'
+        });
+    } catch (error) {
+        console.error('Ошибка при изменении цен:', error);
+    }
+  }
 };
 // Конфигурации сеансов
 const openCreateModal = () => {
@@ -392,20 +403,35 @@ const openRedactModal = (item) => {
 };
 const addFilm = async (film) => {
   try {
-    const response = await apiRequest.post(`/films`, {
-        film: film,
+    const formData = new FormData();
+    formData.append('name', film.name);
+    formData.append('description', film.description);
+    formData.append('productionCountry', film.productionCountry);
+    formData.append('duration', film.duration);
+    formData.append('poster', film.poster);
+    const response = await apiRequest.post(`/films`, formData, {
+        headers:{
+          'Content-Type': 'multipart/form-data'
+        },
     });
     filmsData.value = response.data.films;
   } catch (error) {
     console.error('Ошибка при создании фильма:', error);
   }
 };
-const deleteSession = (id) => {
-  sessionsToDelete.value.push(id);
+const deleteSession = (item) => {
+  if(typeof(item) === 'number') {
+    sessionsToDelete.value.push(item);
+  } else {
+    newSessions.value.forEach((el, index) => {
+      if(el.start === item.start && el.end === item.end && el.filmId === item.filmId && el.hallId === item.hallId) {
+         newSessions.value.splice(index, 1);
+      }
+    });
+  }
 };
 const addSession = (props) => {
   newSessions.value.push(props);
-  // console.log(newSessions.value);
 };
 const resetSessionsChanges = async () => {
   sessionsToDelete.value = [];
@@ -434,7 +460,7 @@ const saveSessionsChanges = async () => {
     }
   }
 };
-// Открытие продажи билетов // Смена статуса зала
+// Открытие продажи билетов - Смена статуса зала
 const openSales = async () => {
   const closedHallsIds = [];
   hallsData.value.forEach(item => {

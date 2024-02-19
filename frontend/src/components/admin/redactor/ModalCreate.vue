@@ -16,7 +16,7 @@
                 <label class="conf-step__label modal-form__label">Длительность в минутах<input v-model="film.duration" type="text" class="conf-step__input modal-form__input" placeholder="Введите длительность фильма" required></label>
             </div> 
             <div class="conf-step__legend modal-form__legend">
-                <label class="conf-step__label modal-form__label">Постер<input v-model="film.poster" type="text" class="conf-step__input modal-form__input" placeholder="Введите название постера фильма (он должен находиться в папках)" required></label>
+                <label class="conf-step__label modal-form__label">Постер<input @change="setPoster($event.target)" type="file" class="conf-step__input modal-form__input" placeholder="Загрузите постер" required></label>
             </div> 
 
             <input type="submit" value="Добавить" class="conf-step__button conf-step__button-accent" @click.prevent="addFilm"> 
@@ -34,8 +34,12 @@ const film = ref({
     description: '',
     productionCountry: '',
     duration: '',
-    poster: ''
+    poster: null
 })
+
+const setPoster = (e) => {
+    film.value.poster = e.files[0];
+};
 
 const closeCreateModal = () => {
     emits('closeCreateModal');
